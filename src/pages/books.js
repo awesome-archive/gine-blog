@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import withRoot from '../withRoot'
-import Layout from '../components/layout'
+import Layout from '../components/layout/index'
 import BookItem from '../components/book/bookItem'
 import { graphql } from 'gatsby'
 
@@ -18,14 +18,15 @@ const styles = theme => ({
 
 class Index extends React.Component {
     render() {
-        const { classes, data: { allBook } } = this.props
+        const { classes, data: { allBooks, allPosts } } = this.props
         const { currentPage } = this.props.pageContext
         return (
             <Layout title="书单">
                 <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: '1760px', margin: '0 auto' }}>
                     {
-                        allBook.edges.map(item => {
-                            return <BookItem data={item} />
+                        allBooks.edges.map(item => {
+                            let postsInfo = item.node.posts
+                            return <BookItem data={{ postsInfo, ...item }} />
                         })
                     }
                 </div>
@@ -43,7 +44,15 @@ export default withRoot(withStyles(styles)(Index))
 
 export const query = graphql`
    query {
-    allBook {
+    allPosts {
+        edges {
+          node {
+            name
+            slug
+          }
+        }
+    }
+    allBooks {
       edges {
         node {
           slug
@@ -55,9 +64,12 @@ export const query = graphql`
           comment
           name
           tags
+          posts{
+            slug
+            name
+          }
         }
       }
     }
   }
-  
 `

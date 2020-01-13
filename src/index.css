@@ -1,11 +1,10 @@
 body, html {
     margin: 0;
-    background: #f3f5f7;
 }
 
 a {
     text-decoration: none;
-    color: #009688!important;
+    color: #00796b!important;
     overflow-wrap: break-word;
 }
 
@@ -98,4 +97,28 @@ blockquote {
 
 [data-block-id] {
     max-width: 100%!important;
+}
+
+
+/* moments */
+
+.pswp-thumbnails{
+    display: flex;
+    max-width: 400px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+.pswp-thumbnail{
+    padding: 2px;
+    max-width: 200px;
+    min-width: 100px;
+    height: 100px;
+    overflow: hidden;
+    /* background: #000000 */
+}
+
+
+/* react-images z-index fix */
+.fullscreen > div{
+    z-index: 1200!important;
 }

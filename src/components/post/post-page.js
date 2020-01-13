@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import withRoot from '../../withRoot'
-import Layout from '../layout'
+import Layout from '../layout/index'
 import PostListItem from './post-list-item'
 import Pagination from '../utils/pagination'
 import { graphql } from 'gatsby'
@@ -13,7 +13,7 @@ const styles = theme => ({
         paddingTop: theme.spacing.unit * 20,
     },
     index: {
-        margin: '0 auto',
+        margin: '2px auto',
         maxWidth: 700,
     },
 })
@@ -25,18 +25,18 @@ class Index extends React.Component {
         return (
             <Layout>
                 <div className={classes.index}>
-                    {data.allPost.edges.map(({ node }) => (
+                    {data.allPosts.edges.map(({ node }) => (
                         <PostListItem title={node.name}
                             key={node.id}
-                            content={node.brief}
+                            content={node.name}
                             slug={node.slug}
                             format={node.pformat}
                             tags={node.tags}
                             date={node.public_date}
                         />
                     ))}
-                    <Pagination totalCount={data.allPost.totalCount}
-                        pageSize={data.site.siteMetadata.pageSize}
+                    <Pagination totalCount={data.allPosts.totalCount}
+                        pageSize={data.siteConfig.pageSize}
                         currentPage={currentPage}
                     />
                 </div>
@@ -54,12 +54,10 @@ export default withRoot(withStyles(styles)(Index))
 export const query = graphql`
    query ($skip: Int!, $limit: Int!)
   {
-    site {
-      siteMetadata {
-        pageSize
-    }
+    siteConfig {  
+      pageSize
   }
-  allPost(skip: $skip, limit: $limit,sort: { fields: [public_date], order: DESC }) {
+  allPosts(skip: $skip, limit: $limit,sort: { fields: [public_date], order: DESC },filter: {status: {eq: "published"}}) {
     edges{
       node{
         id
@@ -67,10 +65,6 @@ export const query = graphql`
         tags
         public_date
         slug
-        brief
-        pformat{
-            page_cover
-        }
       }
     }
     totalCount

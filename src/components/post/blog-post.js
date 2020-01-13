@@ -3,16 +3,16 @@ import { graphql } from 'gatsby'
 import Layout from '../layout'
 import withRoot from '../../withRoot'
 import Paper from '../utils/paper'
-import 'prismjs/themes/prism-tomorrow.css'
-import 'prismjs/plugins/line-numbers/prism-line-numbers.css'
 import ScrollProgress from '../utils/scroll-progress'
 import ColorfulTag from '../utils/hash-colorful-tag'
 import getImageByName from '../utils/notion-hash-image'
-import Disqus from 'disqus-react';
+import Disqus from 'disqus-react'
 import { Helmet } from "react-helmet"
-import config from '../../../config'
-import notion from '../../notion/api'
-
+import { parseImageUrl } from 'notabase/src/utils'
+import 'prismjs/themes/prism-tomorrow.css'
+import 'prismjs/plugins/line-numbers/prism-line-numbers.css'
+import 'katex/dist/katex.min.css'
+import '../../static/css/gist.css'
 
 class BlogPost extends React.Component {
     constructor(props) {
@@ -25,8 +25,9 @@ class BlogPost extends React.Component {
 
     componentDidMount() {
         const { data } = this.props
-        const post = data.post
-        const { disqusShortname } = config.comment.disqus;
+        // console.log(data)
+        const post = data.posts
+        const disqusShortname = data.siteConfig.commentDisqusShortname
         const disqusConfig = {
             url: window.location.href,
             identifier: window.location.pathname,
@@ -53,37 +54,37 @@ class BlogPost extends React.Component {
 
     render() {
         const { data } = this.props
-        const post = data.post
+        let siteConfig = data.siteConfig
         const { public_date,
-            update_time,
             name,
             tags,
             html,
             slug,
             keywords,
             pformat,
-        } = post
+        } = data.posts
         const { disqusShortname, disqusConfig } = this.state
         const seoKeywords = keywords ? keywords.join(" ") : ''
         let coverImageUrl
 
         if (pformat && pformat.page_cover) {
             let cover = pformat.page_cover
-            coverImageUrl = notion.parseImageUrl(cover)
+            coverImageUrl = parseImageUrl(cover)
         } else {
             coverImageUrl = getImageByName(slug)
         }
         return (
+
             <div>
                 <ScrollProgress />
-                <Layout>
+                <Layout navStyle={{ background: 'rgba(0,0,0,.05)' }} wrapStyle={{ marginTop: 0 }}>
                     <img style={{
                         width: '100%',
                         height: '400px',
                         objectFit: 'cover',
                         zIndex: 1
                     }} src={coverImageUrl} />
-                    <Helmet defaultTitle={`${config.blogMeta.title} - ${name}`}>
+                    <Helmet defaultTitle={`${siteConfig.title} - ${name}`}>
                         <meta name="description" content={`${seoKeywords} ${name} mayne gine 博客 python react`} />
                     </Helmet>
                     <main style={{
@@ -118,7 +119,7 @@ class BlogPost extends React.Component {
                             <h1>{name}</h1>
                             <div dangerouslySetInnerHTML={{ __html: html }} />
                             {
-                                (config.comment.open && disqusShortname && disqusConfig) && <Disqus.DiscussionEmbed shortname={disqusShortname} config={disqusConfig} />
+                                (data.siteConfig.commentOpen && disqusShortname && disqusConfig) && <Disqus.DiscussionEmbed shortname={disqusShortname} config={disqusConfig} />
                             }
 
                         </Paper>
@@ -133,18 +134,20 @@ class BlogPost extends React.Component {
 export default withRoot(BlogPost)
 
 export const query = graphql`
+
   query($slug: String!) {
-    post(slug: { eq: $slug } ) {
+    siteConfig {  
+        title
+        commentDisqusShortname
+        commentOpen
+    }
+    posts(slug: { eq: $slug } ) {
         public_date
-        update_time
         name
         tags
         html
         slug
         keywords
-        pformat{
-            page_cover
-        }
     }
   }
 `

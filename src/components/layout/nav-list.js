@@ -9,18 +9,15 @@ import HomeIcon from '@material-ui/icons/Home'
 import TagIcon from '@material-ui/icons/Bookmark'
 import AboutIcon from '@material-ui/icons/Person'
 import BookListIcon from '@material-ui/icons/LibraryBooks'
-import SubscriptionsIcon from '@material-ui/icons/Subscriptions'
 import ArchiveIcon from '@material-ui/icons/Archive'
 import MusicIcon from '@material-ui/icons/Headset'
 import FriendIcon from '@material-ui/icons/People'
+import MomentIcon from '@material-ui/icons/Camera'
 import PaletteIcon from '@material-ui/icons/Palette'
-
 
 import CardMedia from '@material-ui/core/CardMedia'
 import { Link } from 'gatsby'
-
-import avatar from '../static/41546411364_.pic.jpg' // 需要自定义头像修改此处
-import config from '../../config'
+import avatar from '../../static/avatar.jpg'
 
 
 function ListItemLink(props) {
@@ -41,11 +38,10 @@ const styles = theme => ({
 const MyLink = props => <Link {...props} />
 
 function SimpleList(props) {
-    const { classes } = props
-
+    const { classes, siteConfig: { aboutPostSlug, momentsOpen, booksOpen } } = props
     return (
         <div className={classes.root}>
-            <MyLink to={'/page/1'}>
+            <MyLink to={'/'}>
                 <CardMedia
                     className={classes.media}
                     image={avatar}
@@ -53,7 +49,7 @@ function SimpleList(props) {
                 />
             </MyLink>
             <List component="nav">
-                <MyLink to={'/page/1'}>
+                <MyLink to={'/'}>
                     <ListItem button>
                         <ListItemIcon>
                             <HomeIcon color={'primary'} />
@@ -80,7 +76,7 @@ function SimpleList(props) {
                     </ListItem>
                 </MyLink>
 
-                <MyLink to={`posts/${config.blogMeta.aboutPostSlug}/`}>
+                <MyLink to={`posts/${aboutPostSlug}`}>
                     <ListItem button>
                         <ListItemIcon>
                             <AboutIcon style={{ color: '#ffc107' }} />
@@ -88,9 +84,18 @@ function SimpleList(props) {
                         <ListItemText primary="关于" />
                     </ListItem>
                 </MyLink>
-
                 {
-                    config.book.open && <MyLink to={'books'}>
+                    momentsOpen && <MyLink to={'moments'}>
+                        <ListItem button>
+                            <ListItemIcon>
+                                <MomentIcon style={{ color: '#4a148c' }} />
+                            </ListItemIcon>
+                            <ListItemText primary="动态" />
+                        </ListItem>
+                    </MyLink>
+                }
+                {
+                    booksOpen && <MyLink to={'books'}>
                         <ListItem button>
                             <ListItemIcon>
                                 <BookListIcon style={{ color: '#607d8b' }} />
@@ -100,7 +105,7 @@ function SimpleList(props) {
                     </MyLink>
                 }
 
-                {
+                {/* {
                     config.music.open && <MyLink to={'music'}>
                         <ListItem button>
                             <ListItemIcon>
@@ -109,9 +114,9 @@ function SimpleList(props) {
                             <ListItemText primary="音乐" />
                         </ListItem>
                     </MyLink>
-                }
+                } */}
 
-                {
+                {/* {
                     config.bangumi.open && <MyLink to={'bangumi'}>
                         <ListItem button>
                             <ListItemIcon>
@@ -120,8 +125,8 @@ function SimpleList(props) {
                             <ListItemText primary="番剧" />
                         </ListItem>
                     </MyLink>
-                }
-                {
+                } */}
+                {/* {
                     config.draw.open && <MyLink to={'v2draw'}>
                         <ListItem button>
                             <ListItemIcon>
@@ -130,8 +135,7 @@ function SimpleList(props) {
                             <ListItemText primary="绘画" />
                         </ListItem>
                     </MyLink>
-                }
-
+                } */}
                 <MyLink to={'links'}>
                     <ListItem button>
                         <ListItemIcon>

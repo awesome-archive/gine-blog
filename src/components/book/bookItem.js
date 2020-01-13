@@ -1,27 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
+import Card from '../mui-override/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
-import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import ColorfulTag from '../utils/hash-colorful-tag'
-import StateTag from '../bangumi/StateTag';
-import Button from '@material-ui/core/Button';
+import StateTag from '../utils/state-tag';
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
+import { Link } from 'gatsby'
 
 const styles = theme => ({
     card: {
         display: 'flex',
         height: 217,
         width: 420,
-        margin: '10px',
+        margin: '10px auto',
         position: 'relative'
     },
     details: {
@@ -64,7 +61,8 @@ function MediaControlCard(props) {
         setOpen(false);
     }
 
-    const { classes, theme, data: { node: {
+
+    const { classes, theme, data: { postsInfo, node: {
         name, comment, cover_image, slug, stars, start, status, tags
     } } } = props;
 
@@ -113,8 +111,14 @@ function MediaControlCard(props) {
                     <DialogTitle id={`book-${slug}`}>{`关于《${name}》的评论`}</DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                            {comment}
+                            {`${comment}`}
                         </DialogContentText>
+                        {
+                            postsInfo && Boolean(postsInfo.length) && <h3>相关文章</h3>
+                        }
+                        {
+                            postsInfo && postsInfo.map(item => <Link to={`posts/${item.slug}`}><div>{item.name}</div></Link>)
+                        }
                     </DialogContent>
                 </Dialog>
             </div>

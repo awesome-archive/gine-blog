@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
-import Card from '@material-ui/core/Card'
+import Card from '../mui-override/Card'
 import CardActionArea from '@material-ui/core/CardActionArea'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography'
 import { Link } from 'gatsby'
 import getImageByName from '../utils/notion-hash-image'
 import ColorfulTag from '../utils/hash-colorful-tag'
-import notion from '../../notion/api'
+import { parseImageUrl } from 'notabase/src/utils'
 
 const styles = {
     card: {
@@ -30,11 +30,11 @@ function notionImageResize(url, width) {
 
 function ImgMediaCard(props) {
     const { classes, title, content, slug, format, tags, date } = props
-    const MyLink = props => <Link to={slug} {...props} />
+    const MyLink = props => <Link to={`posts/${slug}`} {...props} />
     let coverImageUrl
     if (format && format.page_cover) {
         let cover = format.page_cover
-        coverImageUrl = notion.parseImageUrl(cover, 520)
+        coverImageUrl = parseImageUrl(cover, 520)
     } else {
         coverImageUrl = notionImageResize(getImageByName(slug), 520)
     }

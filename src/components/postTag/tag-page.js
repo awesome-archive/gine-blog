@@ -27,13 +27,13 @@ class Index extends React.Component {
             <Layout>
                 <div className={classes.index}>
                     <div style={{ display: 'flex' }}>
-                        <span>共有{data.allPost.totalCount}篇关于 </span> <ColorfulTag tag={tag} /> <span>的文章</span>
+                        <span>共有{data.allPosts.totalCount}篇关于 </span> <ColorfulTag tag={tag} /> <span>的文章</span>
                     </div>
 
-                    {data.allPost.edges.map(({ node }) => (
+                    {data.allPosts.edges.map(({ node }) => (
                         <PostListItem title={node.name}
                             key={node.id}
-                            content={node.brief}
+                            content={node.name}
                             slug={node.slug}
                             image={node.image}
                             tags={node.tags}
@@ -54,7 +54,7 @@ export default withRoot(withStyles(styles)(Index))
 
 export const query = graphql`
 query ($tag: String!){
-    allPost(filter:{tags: {in: [$tag]}},sort: { fields: [public_date], order: DESC }) {
+    allPosts(filter:{tags: {in: [$tag]},status: {eq: "published"}},sort: { fields: [public_date], order: DESC }) {
         edges{
           node{
             id
@@ -62,7 +62,6 @@ query ($tag: String!){
             tags
             public_date
             slug
-            brief
           }
         }
         totalCount

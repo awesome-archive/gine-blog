@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import withRoot from '../withRoot'
-import Layout from '../components/layout'
+import Layout from '../components/layout/index'
 import { Link } from 'gatsby'
 import { graphql } from 'gatsby'
 import Typography from '@material-ui/core/Typography'
@@ -13,13 +13,13 @@ const styles = theme => ({
     index: {
         margin: '0 auto',
         maxWidth: 800,
-        marginTop: '1em',
+        paddingTop: '1em',
     },
 })
 
 class Tags extends React.Component {
     render() {
-        const { classes, data: { allPost: { edges } } } = this.props
+        const { classes, data: { allPosts: { edges } } } = this.props
 
         let allPosts = {}
         let allYears = new Set()
@@ -49,7 +49,7 @@ class Tags extends React.Component {
                                                     borderLeft: '2px solid #999',
                                                     padding: '5px 0 5px 1em'
                                                 }}>
-                                                    <Typography variant="h6">{`${month}-${day} `}<Link to={post.slug}>{post.name}</Link></Typography>
+                                                    <Typography variant="h6">{`${month}-${day} `}<Link to={`posts/${post.slug}`}>{post.name}</Link></Typography>
                                                 </li>
 
                                             })
@@ -75,7 +75,7 @@ export default withRoot(withStyles(styles)(Tags))
 
 export const query = graphql`
 {
-  allPost(sort: {fields: [public_date], order: DESC}) {
+    allPosts(sort: {fields: [public_date], order: DESC},filter: {status: {eq: "published"}}) {
     edges {
       node {
         id

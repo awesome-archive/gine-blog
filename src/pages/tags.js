@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import withRoot from '../withRoot'
-import Layout from '../components/layout'
+import Layout from '../components/layout/index'
 import countBy from 'lodash/countBy'
 import ColorfulTag, { getHashColor } from '../components/utils/hash-colorful-tag'
 import { graphql } from 'gatsby'
@@ -13,14 +13,14 @@ const styles = theme => ({
     index: {
         margin: '0 auto',
         maxWidth: 800,
-        marginTop: '1em',
+        paddingTop: '1em',
         textAlign: 'center',
     },
 })
 
 class Tags extends React.Component {
     render() {
-        const { classes, data: { allPost: { edges } } } = this.props
+        const { classes, data: { allPosts: { edges } } } = this.props
         let allTags = []
         edges.forEach(
             ({ node }) => allTags = allTags.concat(node.tags))
@@ -53,7 +53,7 @@ export default withRoot(withStyles(styles)(Tags))
 
 export const query = graphql`
   {
-  allPost{
+    allPosts(filter:{status: {eq: "published"}}){
     edges {
       node {
         tags

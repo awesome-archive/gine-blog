@@ -1,29 +1,51 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
-import Axios from "axios"
-import _ from 'loadsh'
+import _ from 'lodash'
 import SearchResults from './searchResult'
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 import CloseIcon from '@material-ui/icons/Cancel';
-import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import config from '../../../config'
-import notion from '../../notion/api'
+import Notabase from 'notabase'
 
+
+let _url
+if (process.env.NODE_ENV === 'development') {
+    _url = `http://127.0.0.1:9000/.netlify/functions/notion`
+} else {
+    _url = `/.netlify/functions/notion`
+}
+let nb = new Notabase({
+    proxy: {
+        url: _url
+    }
+})
 
 const styles = theme => ({
     mydlg: {
-        position: 'fixed',
+        position: 'absolute',
         top: 0,
     },
     progress: {
         margin: theme.spacing.unit * 0,
     },
+    searchIcon: {
+        position: 'fixed',
+        top: 0,
+        right: 0,
+        margin: '10px',
+        '&:hover': {
+            cursor: 'pointer'
+        }
+    },
+    cancelSearch: {
+        '&:hover': {
+            cursor: 'pointer'
+        }
+    }
 })
 
 class FormDialog extends React.Component {
@@ -56,12 +78,12 @@ class FormDialog extends React.Component {
     }
     searchBlog = async (query) => {
         // 需要搭配后端 api 使用。构造自己的 url 格式
-        const { getUrlBloackId, getFullBlockId } = notion
-        const tableID = getFullBlockId(getUrlBloackId(config.blog.url))
-        let url = `${config.blog.search.api}?table=${tableID}&query=${query}`
-        let res = await Axios.get(url)
+        const { sourceUrl } = this.props
+        console.log(sourceUrl)
+        const tableID = sourceUrl
+        let res = await nb.searchBlocks(tableID, query)
         this.setState({
-            blockData: res.data,
+            blockData: res,
             isSearchStarted: true,
             loading: false
         })
@@ -106,14 +128,14 @@ class FormDialog extends React.Component {
         const { blockData, isSearchStarted, query, loading } = this.state;
         const { classes } = this.props;
         return (
-            <div>
-                <IconButton variant="outlined" onClick={this.handleClickOpen} style={{
-                    position: 'fixed',
-                    top: 0,
-                    right: 0
-                }}>
-                    <SearchIcon />
-                </IconButton>
+            <>
+                <SearchIcon
+                    color="inherit"
+                    aria-label="Search"
+                    variant="outlined"
+                    onClick={this.handleClickOpen}
+                    className={classes.searchIcon}
+                />
                 <Dialog
                     open={this.state.open}
                     onClose={this.handleClose}
@@ -124,6 +146,7 @@ class FormDialog extends React.Component {
                     <DialogContent >
                         <TextField
                             autoFocus
+                            autoComplete="off"
                             value={query}
                             margin="dense"
                             id="chromecantguess"
@@ -138,9 +161,7 @@ class FormDialog extends React.Component {
                                 ),
                                 endAdornment: (
                                     <InputAdornment position="end">
-                                        <IconButton onClick={this.cancelSearch}>
-                                            <CloseIcon style={{ color: "gray" }} />
-                                        </IconButton>
+                                        <CloseIcon style={{ color: "gray" }} onClick={this.cancelSearch} className={classes.cancelSearch} />
                                     </InputAdornment>
                                 ),
                             }}
@@ -149,7 +170,7 @@ class FormDialog extends React.Component {
                         {blockData && isSearchStarted && <SearchResults data={blockData} />}
                     </DialogContent>
                 </Dialog>
-            </div>
+            </>
         );
     }
 }
